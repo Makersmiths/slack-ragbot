@@ -71,7 +71,16 @@
         },
         "ai_services_dns_name": {
             "type": "string",
-            "defaultValue": "[concat('test-rag', uniqueString(resourceGroup().id))]"        }
+            "defaultValue": "[concat('test-rag', uniqueString(resourceGroup().id))]"        
+        },
+        "publicIpAddress": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "managementIp": {
+            "type": "string",
+            "defaultValue": ""
+        }
     },
     "variables": {},
     "resources": [
@@ -90,46 +99,6 @@
             "name": "[parameters('networkSecurityGroups_compute_access_group_name')]",
             "location": "eastus",
             "properties": {
-                "securityRules": [
-                    {
-                        "name": "rob_home_ip",
-                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('networkSecurityGroups_compute_access_group_name'), 'rob_home_ip')]",
-                        "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-                        "properties": {
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "22",
-                            "sourceAddressPrefix": "71.171.90.44",
-                            "destinationAddressPrefix": "*",
-                            "access": "Allow",
-                            "priority": 100,
-                            "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    },
-                    {
-                        "name": "AllowCidrBlockSSHInbound",
-                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('networkSecurityGroups_compute_access_group_name'), 'AllowCidrBlockSSHInbound')]",
-                        "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-                        "properties": {
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "22",
-                            "sourceAddressPrefix": "24.102.174.106",
-                            "destinationAddressPrefix": "*",
-                            "access": "Allow",
-                            "priority": 110,
-                            "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    }
-                ]
             }
         },
         {
@@ -154,7 +123,7 @@
                 "1"
             ],
             "properties": {
-                "ipAddress": "172.210.10.108",
+                "ipAddress": "[parameters('publicIpAddress')]",
                 "publicIPAddressVersion": "IPv4",
                 "publicIPAllocationMethod": "Static",
                 "idleTimeoutInMinutes": 4,
@@ -293,7 +262,7 @@
                             "publicKeys": [
                                 {
                                     "path": "/home/mak-rag-user/.ssh/authorized_keys",
-                                    "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCl90HW5D4e+NxkgJMl+Onx3d5ROvMgDGlIc1hcOjNRh65viIOlMEO8NacE56wMlYuPcWk+TwibBSitCH7BYYjW/IXyEGHp0m8Lt8ywdYFdpHtjrbm1lqhI/H3fZBCyNV1eJni1ceGzEIN3O3KIUTSFY8DDALQSPY9WIxIRlw15VPVH7uyPanshmBcQge/34UyqWhh7SYsrbZagk9lfcXz/tqXgQ+s+qHR+yNajtaaJL0YZV67iHkHh6YfI8GEVmMO8J/O+mOrZsZS7TmB433w+91fPNHsIRc0vVP22Eci6rjdgJ7Th3+nU550VETTZnL++tMoP+cSK0AxpONENqloJmlXeoxKnQDSLm3LH+tTUq4MUjwQ2NnZrgGdsEsafKyyveKgpGuBRbn6V4UKN3Xw3tHCPQBGH91corjRIHJ6AL9rwpu/lM68X53KGfA2mviNpCPySY3g0QQKrqNK9+ToHbVLisVkBIVhv6ZAU8NANC5FCSfVrWP2PH/efQnNfvJE= generated-by-azure"
+                                    "keyData": "[parameters('pubSshKey')]"
                                 }
                             ]
                         },
@@ -716,32 +685,10 @@
                 "protocol": "TCP",
                 "sourcePortRange": "*",
                 "destinationPortRange": "22",
-                "sourceAddressPrefix": "24.102.174.106",
+                "sourceAddressPrefix": "[parameters('managementIp')]",
                 "destinationAddressPrefix": "*",
                 "access": "Allow",
                 "priority": 110,
-                "direction": "Inbound",
-                "sourcePortRanges": [],
-                "destinationPortRanges": [],
-                "sourceAddressPrefixes": [],
-                "destinationAddressPrefixes": []
-            }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-            "apiVersion": "2024-03-01",
-            "name": "[concat(parameters('networkSecurityGroups_compute_access_group_name'), '/rob_home_ip')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_compute_access_group_name'))]"
-            ],
-            "properties": {
-                "protocol": "TCP",
-                "sourcePortRange": "*",
-                "destinationPortRange": "22",
-                "sourceAddressPrefix": "71.171.90.44",
-                "destinationAddressPrefix": "*",
-                "access": "Allow",
-                "priority": 100,
                 "direction": "Inbound",
                 "sourcePortRanges": [],
                 "destinationPortRanges": [],
