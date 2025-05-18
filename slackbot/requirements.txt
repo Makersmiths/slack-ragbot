@@ -1,4 +1,4 @@
-azure=5.0.0 
+azure==5.0.0 
 slack-bolt==1.21.2
 pytest
 flake8==7.1.1
