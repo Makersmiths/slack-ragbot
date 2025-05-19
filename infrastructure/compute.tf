@@ -59,7 +59,7 @@ resource "azurerm_linux_virtual_machine" "rag_compute" {
 
 resource "azurerm_role_assignment" "compute-ai-dev-role" {
   scope                = data.azurerm_subscription.primary.id
-  role_definition_name = "Azure AI Developer"
+  role_definition_name = "Cognitive Services Contributor"
   principal_id         = azurerm_linux_virtual_machine.rag_compute.identity[0].principal_id
 }
 
@@ -72,5 +72,11 @@ resource "azurerm_role_assignment" "compute-reader-role" {
 resource "azurerm_role_assignment" "compute-cosmos-reader-role" {
   scope                = data.azurerm_subscription.primary.id
   role_definition_name = "Cosmos DB Account Reader Role"
+  principal_id         = azurerm_linux_virtual_machine.rag_compute.identity[0].principal_id
+}
+
+resource "azurerm_role_assignment" "compute-keyvault-secret-user" {
+  scope                = data.azurerm_subscription.primary.id
+  role_definition_name = "Key Vault Secrets Officer"
   principal_id         = azurerm_linux_virtual_machine.rag_compute.identity[0].principal_id
 }

@@ -13,6 +13,9 @@ provider "azurerm" {
       key_vault {
         purge_soft_delete_on_destroy =  true
       }
+      cognitive_account {
+        purge_soft_delete_on_destroy = true
+      }
       machine_learning {
         purge_soft_deleted_workspace_on_destroy = true
       }
@@ -61,7 +64,7 @@ resource "azurerm_cognitive_account" "rag_cognitive_account" {
     type = "SystemAssigned"
   }
   public_network_access_enabled = true
-  local_auth_enabled = false
+  local_auth_enabled = true
   custom_subdomain_name = var.subdomain_name
   network_acls {
     bypass = "AzureServices"
@@ -128,6 +131,15 @@ resource "azurerm_key_vault" "rag_kv" {
       "Get","List", "Set", "Purge", "List", "Delete"
     ]
   }
+
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = azurerm_linux_virtual_machine.rag_compute.identity[0].principal_id
+
+    secret_permissions = [
+      "Get","List", "Set", "Purge", "List", "Delete"
+    ]
+  }
   network_acls {
     bypass = "AzureServices"
     default_action = "Deny"
@@ -139,29 +151,35 @@ resource "azurerm_key_vault_secret" "confluence_token" {
   name         = "confluence-token"
   value        = var.confluence_space_key
   key_vault_id = azurerm_key_vault.rag_kv.id
+  depends_on = [ azurerm_key_vault.rag_kv ]
 }
 resource "azurerm_key_vault_secret" "confluence_space_key" {
   name         = "confluence-space-key"
   value        = var.confluence_space_key
   key_vault_id = azurerm_key_vault.rag_kv.id
+  depends_on = [ azurerm_key_vault.rag_kv ]
 }
 resource "azurerm_key_vault_secret" "confluence_url" {
   name         = "confluence-url"
   value        = var.confluence_url
   key_vault_id = azurerm_key_vault.rag_kv.id
+  depends_on = [ azurerm_key_vault.rag_kv ]
 }
 resource "azurerm_key_vault_secret" "slack_client_secret" {
   name         = "slack-app-token"
   value        = var.slack_client_secret
   key_vault_id = azurerm_key_vault.rag_kv.id
+  depends_on = [ azurerm_key_vault.rag_kv ]
 }
 resource "azurerm_key_vault_secret" "slack_bot_token" {
   name         = "slack-bot-token"
   value        = var.slack_bot_token
   key_vault_id = azurerm_key_vault.rag_kv.id
+  depends_on = [ azurerm_key_vault.rag_kv ]
 }
 resource "azurerm_key_vault_secret" "slack_client_id" {
   name         = "slack-client"
   value        = var.slack_client_id
   key_vault_id = azurerm_key_vault.rag_kv.id
+  depends_on = [ azurerm_key_vault.rag_kv ]
 }
