@@ -1,11 +1,13 @@
 import os
 from slackbot.lib.methods import get_openai_embedding, DocumentsToDataframe, confluence_scraper, get_subscription_and_resource_group, get_keyvault_url, get_cognitive_services_details, get_cosmosdb_details, reencode_strings, retrieve_secret
 from azure.cosmos import CosmosClient
+from azure.identity import DefaultAzureCredential
 
 #Set chunk and sliding window parameters 
 chunk_length = 400
 overlap = 125
 
+credential = DefaultAzureCredential()
 #Capture Azure environment context
 results = get_subscription_and_resource_group()
 subscription_id = results[0]
@@ -13,10 +15,12 @@ resource_group = results[1]
 keyvault_url = get_keyvault_url(subscription_id, resource_group)
 cs_details = get_cognitive_services_details(subscription_id, resource_group)
 cosmos_details = get_cosmosdb_details(subscription_id, resource_group)
+# open_details = get_openai_details(subscription_id, resource_group)
 
 #Set environment variables for scraping/loading
 os.environ['OPENAI_EMBEDDING_URI'] = "{}openai/deployments/text-embedding-3-large/embeddings/?api-version=2023-05-15".format(cs_details[0])
-os.environ['COSMOS_WRITE_KEY'] = retrieve_secret('cosmos-write-key', keyvault_url)
+# os.environ['OPENAI_EMBEDDING_TOKEN'] = retrieve_secret('Azure-OpenAI-embedding-token', keyvault_url)
+# os.environ['COSMOS_WRITE_KEY'] = retrieve_secret('cosmos-write-key', keyvault_url)
 os.environ['COSMOS_URI'] = cosmos_details[0]
 os.environ['COSMOS_DB_NAME'] ='vectorDB'
 os.environ['COSMOS_CONTAINER_NAME'] ='vectorContainer'
@@ -24,7 +28,7 @@ os.environ['CONFLUENCE_URL'] = retrieve_secret('confluence-url', keyvault_url)
 os.environ['CONFLUENCE_TOKEN'] = retrieve_secret('confluence-token', keyvault_url)
 os.environ['CONFLUENCE_SPACE_KEY'] = retrieve_secret('confluence-space-key', keyvault_url)
 
-cosmos_client = CosmosClient(os.environ.get('COSMOS_URI'), credential=os.environ.get('COSMOS_WRITE_KEY'))
+cosmos_client = CosmosClient(os.environ.get('COSMOS_URI'), credential=credential)
 database = cosmos_client.get_database_client(os.environ.get('COSMOS_DB_NAME'))
 container = database.get_container_client(os.environ.get('COSMOS_CONTAINER_NAME'))
 
@@ -64,7 +68,7 @@ exploded_df.reset_index(drop=True, inplace=True)
 
 #Upload items to CosmosDB container
 for i in range(len(exploded_df)):
-    embeddings = get_openai_embedding(exploded_df['content_split'][i], os.environ.get('OPENAI_EMBEDDING_URI'), os.environ.get('OPENAI_EMBEDDING_TOKEN'))
+    embeddings = get_openai_embedding(exploded_df['content_split'][i], os.environ.get('OPENAI_EMBEDDING_URI'), credential)
     container.upsert_item({
             'id': 'item{0}'.format(i),
             'title': exploded_df['title'][i],
