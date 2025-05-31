@@ -25,3 +25,4 @@ azure-mgmt-cognitiveservices==13.6.0
 azure-keyvault-secrets==4.9.0
 openai==1.59.6
 azure-appconfiguration==1.7.1
+atlassian-python-api==4.0.4

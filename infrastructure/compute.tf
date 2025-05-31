@@ -12,10 +12,9 @@ resource "azurerm_network_interface" "rag_compute_nic" {
   }
 }
 
-
 resource "azurerm_linux_virtual_machine" "rag_compute" {
   name                = "rag_compute"
-  computer_name = "rag-compute"
+  computer_name       = "rag-compute"
   resource_group_name = azurerm_resource_group.rag_rg.name
   location            = azurerm_resource_group.rag_rg.location
   size                = "Standard_B1s"
@@ -25,6 +24,7 @@ resource "azurerm_linux_virtual_machine" "rag_compute" {
     azurerm_network_interface.rag_compute_nic.id,
   ]
   zone = 1
+  custom_data = base64encode("setup.sh")
   
   secure_boot_enabled = true
   vtpm_enabled = true
@@ -79,4 +79,27 @@ resource "azurerm_role_assignment" "compute-keyvault-secret-user" {
   scope                = data.azurerm_subscription.primary.id
   role_definition_name = "Key Vault Secrets Officer"
   principal_id         = azurerm_linux_virtual_machine.rag_compute.identity[0].principal_id
+}
+
+resource "azurerm_cosmosdb_sql_role_assignment" "cosmosdb_role_assignment" {
+  account_name      = azurerm_cosmosdb_account.db_account.name
+  resource_group_name = azurerm_resource_group.rag_rg.name
+  scope             = azurerm_cosmosdb_account.db_account.id
+  principal_id      = azurerm_linux_virtual_machine.rag_compute.identity[0].principal_id
+  role_definition_id = azurerm_cosmosdb_sql_role_definition.cosmos-metadata-role-def.id
+  depends_on = [ azurerm_cosmosdb_sql_role_definition.cosmos-metadata-role-def]
+}
+
+resource "azurerm_cosmosdb_sql_role_definition" "cosmos-metadata-role-def" {
+  role_definition_id = "00000000-1928-0000-0000-000000000002"
+  resource_group_name = azurerm_resource_group.rag_rg.name
+  account_name        = azurerm_cosmosdb_account.db_account.name
+  name                = "cosmos-metadata-read-roleacctestsqlrole"
+  assignable_scopes = [
+    azurerm_cosmosdb_account.db_account.id
+  ]
+
+  permissions {
+    data_actions = ["Microsoft.DocumentDB/databaseAccounts/readMetadata", "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/delete"]
+  }
 }
