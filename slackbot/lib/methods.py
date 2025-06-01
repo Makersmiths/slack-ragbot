@@ -172,7 +172,7 @@ def DocumentsToDataframe(documents):
         data.append(row)
     return pd.DataFrame(data)
 
-def get_openai_embedding(text, endpoint, api_key):
+def get_openai_embedding(text, endpoint, token_provider):
     """
     Retrieve vector representation of text from an Azure OpenAI endpoint
 
@@ -184,7 +184,7 @@ def get_openai_embedding(text, endpoint, api_key):
     #Establish an Azure OpenAI client
     client = openai.AzureOpenAI(
         azure_endpoint = endpoint,
-        api_key = api_key,
+        azure_ad_token_provider=token_provider,
         api_version = '2023-05-15'
     )
 

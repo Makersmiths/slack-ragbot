@@ -1,13 +1,18 @@
 import os
 from slackbot.lib.methods import get_openai_embedding, DocumentsToDataframe, confluence_scraper, get_subscription_and_resource_group, get_keyvault_url, get_cognitive_services_details, get_cosmosdb_details, reencode_strings, retrieve_secret
 from azure.cosmos import CosmosClient
-from azure.identity import DefaultAzureCredential
+from azure.identity import DefaultAzureCredential, get_bearer_token_provider
+from openai import AzureOpenAI
 
 #Set chunk and sliding window parameters 
 chunk_length = 400
 overlap = 125
 
 credential = DefaultAzureCredential()
+token_provider = get_bearer_token_provider(
+    DefaultAzureCredential, "https://cognitiveservices.azure.com/.default"
+)
+
 #Capture Azure environment context
 results = get_subscription_and_resource_group()
 subscription_id = results[0]
@@ -68,7 +73,7 @@ exploded_df.reset_index(drop=True, inplace=True)
 
 #Upload items to CosmosDB container
 for i in range(len(exploded_df)):
-    embeddings = get_openai_embedding(exploded_df['content_split'][i], os.environ.get('OPENAI_EMBEDDING_URI'), credential)
+    embeddings = get_openai_embedding(exploded_df['content_split'][i], os.environ.get('OPENAI_EMBEDDING_URI'), token_provider)
     container.upsert_item({
             'id': 'item{0}'.format(i),
             'title': exploded_df['title'][i],

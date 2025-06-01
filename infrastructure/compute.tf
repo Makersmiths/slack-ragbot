@@ -100,6 +100,8 @@ resource "azurerm_cosmosdb_sql_role_definition" "cosmos-metadata-role-def" {
   ]
 
   permissions {
-    data_actions = ["Microsoft.DocumentDB/databaseAccounts/readMetadata", "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/delete"]
+    data_actions = ["Microsoft.DocumentDB/databaseAccounts/readMetadata", 
+    "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/delete",
+    "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/upsert"]
   }
 }
