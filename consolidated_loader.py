@@ -21,7 +21,7 @@ cosmos_details = get_cosmosdb_details(subscription_id, resource_group)
 # open_details = get_openai_details(subscription_id, resource_group)
 
 #Set environment variables for scraping/loading
-os.environ['OPENAI_EMBEDDING_URI'] = "{}openai/deployments/text-embedding-3-large/embeddings/?api-version=2023-05-15".format(cs_details[0])
+os.environ['OPENAI_EMBEDDING_URI'] = "{}openai/deployments/text_embedding/embeddings/?api-version=2023-05-15".format(cs_details[0])
 os.environ['OPENAI_EMBEDDING_TOKEN'] = retrieve_secret('Azure-OpenAI-embedding-token', keyvault_url)
 os.environ['COSMOS_WRITE_KEY'] = retrieve_secret('cosmos-write-key', keyvault_url)
 os.environ['COSMOS_URI'] = cosmos_details[0]
