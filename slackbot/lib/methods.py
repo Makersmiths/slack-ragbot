@@ -187,13 +187,14 @@ def get_openai_embedding(text, endpoint, token_provider):
         azure_ad_token_provider = token_provider,
         api_version = '2024-02-01'
     )
+    print(endpoint)
 
     #Request and return vector representation of text.
     try:
 
         response = client.embeddings.create(
             input=text,
-            model='text_embedding',
+            model="text-embedding-3-large",
             dimensions=768
         )
         return response.data[0].embedding
