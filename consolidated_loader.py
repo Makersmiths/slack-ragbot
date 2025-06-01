@@ -9,9 +9,7 @@ chunk_length = 400
 overlap = 125
 
 credential = DefaultAzureCredential()
-token_provider = get_bearer_token_provider(
-    DefaultAzureCredential, "https://cognitiveservices.azure.com/.default"
-)
+token_provider = get_bearer_token_provider(DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default")
 
 #Capture Azure environment context
 results = get_subscription_and_resource_group()

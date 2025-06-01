@@ -57,6 +57,25 @@ resource "azurerm_linux_virtual_machine" "rag_compute" {
   }
 }
 
+resource "azurerm_role_assignment" "compute-ai-embeddings-assignment" {
+  scope = data.azurerm_subscription.primary.id
+  name = "00102000-0000-0000-0000-000007650000"
+  role_definition_id = azurerm_role_definition.compute-ai-embeddings-definition.role_definition_resource_id
+  principal_id = azurerm_linux_virtual_machine.rag_compute.identity[0].principal_id
+}
+
+resource "azurerm_role_definition" "compute-ai-embeddings-definition" {
+  role_definition_id = "00102000-0000-0000-0000-000007650000"
+  name = "compute-embedding-role"
+  scope = data.azurerm_subscription.primary.id
+  permissions {
+    data_actions = ["Microsoft.CognitiveServices/accounts/OpenAI/deployments/embeddings/action"]
+  }
+  assignable_scopes = [
+    data.azurerm_subscription.primary.id
+  ]
+}
+
 resource "azurerm_role_assignment" "compute-ai-dev-role" {
   scope                = data.azurerm_subscription.primary.id
   role_definition_name = "Cognitive Services Contributor"

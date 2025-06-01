@@ -184,8 +184,8 @@ def get_openai_embedding(text, endpoint, token_provider):
     #Establish an Azure OpenAI client
     client = openai.AzureOpenAI(
         azure_endpoint = endpoint,
-        azure_ad_token_provider=token_provider,
-        api_version = '2023-05-15'
+        azure_ad_token_provider = token_provider,
+        api_version = '2024-02-01'
     )
 
     #Request and return vector representation of text.
