@@ -193,7 +193,7 @@ def get_openai_embedding(text, endpoint, token_provider):
 
         response = client.embeddings.create(
             input=text,
-            model='text-embedding-3-large',
+            model='text_embedding',
             dimensions=768
         )
         return response.data[0].embedding
