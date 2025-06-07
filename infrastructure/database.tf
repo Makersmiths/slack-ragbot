@@ -43,7 +43,7 @@ resource "azurerm_cosmosdb_account" "db_account" {
   }
 
   geo_location {
-    location          = "eastus"
+    location          = "eastus2"
     failover_priority = 0
     zone_redundant = false
   }
