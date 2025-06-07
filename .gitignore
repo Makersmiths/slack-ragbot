@@ -8,6 +8,7 @@ __pycache__/
 # Terraform
 *.terraform*
 *.tfvars
+backend.tf
 
 # C extensions
 *.so
