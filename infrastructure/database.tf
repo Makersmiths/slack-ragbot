@@ -16,7 +16,7 @@ resource "azurerm_cosmosdb_account" "db_account" {
   free_tier_enabled = true
   analytical_storage_enabled = false
   minimal_tls_version = "Tls12"
-  ip_range_filter = [azurerm_public_ip.rag_public_ip.ip_address, var.management_ip]
+  ip_range_filter = [azurerm_public_ip.rag_public_ip.ip_address]
   network_acl_bypass_for_azure_services = true
 
   analytical_storage {

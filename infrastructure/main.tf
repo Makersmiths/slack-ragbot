@@ -134,7 +134,7 @@ resource "azurerm_key_vault" "rag_kv" {
   network_acls {
     bypass = "AzureServices"
     default_action = "Deny"
-    ip_rules = [var.management_ip]
+    ip_rules = var.management_ip
     virtual_network_subnet_ids = [azurerm_subnet.rag_compute_subnet.id]
   }
 }
