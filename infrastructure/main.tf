@@ -1,18 +1,3 @@
-# terraform {
-#   required_providers {
-#     azurerm = {
-#       source = "hashicorp/azurerm"
-#       version = "4.27.0"
-#     }
-#   }
-#   backend "azurerm" {
-#     resource_group_name = ""
-#     storage_account_name = ""
-#     container_name = ""
-#     key = "terraform.tfstate"
-#   }
-# }
-
 provider "azurerm" {
   # Configuration options
     features {
@@ -48,13 +33,13 @@ variable "pub_ssh_key_location" {}
 
 resource "azurerm_resource_group" "rag_rg" {
   name     = var.rg_name
-  location = "East US"
+  location = "East US 2"
 }
 
 resource "azurerm_ssh_public_key" "rag_pub_key" {
   name                = "rag_ssh_key"
   resource_group_name = var.rg_name
-  location            = "East US"
+  location            = "East US 2"
   public_key          = file(var.pub_ssh_key_location)
     depends_on = [azurerm_resource_group.rag_rg]
 }
@@ -118,7 +103,7 @@ resource "azurerm_cognitive_deployment" "text_embedding" {
 }
 
 resource "azurerm_key_vault" "rag_kv" {
-  name                        = "slack-rag-kv6172"
+  name                        = "slack-rag-kv617241"
   location                    = azurerm_resource_group.rag_rg.location
   resource_group_name         = azurerm_resource_group.rag_rg.name
   enabled_for_disk_encryption = true
