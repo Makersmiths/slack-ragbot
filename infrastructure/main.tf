@@ -156,9 +156,9 @@ resource "azurerm_key_vault_secret" "confluence_url" {
   key_vault_id = azurerm_key_vault.rag_kv.id
   depends_on = [ azurerm_key_vault.rag_kv ]
 }
-resource "azurerm_key_vault_secret" "slack_client_secret" {
+resource "azurerm_key_vault_secret" "slack_app_token" {
   name         = "slack-app-token"
-  value        = var.slack_client_secret
+  value        = var.slack_app_token
   key_vault_id = azurerm_key_vault.rag_kv.id
   depends_on = [ azurerm_key_vault.rag_kv ]
 }
