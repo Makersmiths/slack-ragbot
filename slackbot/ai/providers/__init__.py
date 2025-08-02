@@ -46,7 +46,9 @@ def get_provider_response(user_id: str, prompt: str, context: Optional[List] = [
     formatted_context = "\n".join([f"{msg['user']}: {msg['text']}" for msg in context])
     full_prompt = f"Prompt: {prompt}\nContext: {formatted_context}"
     try:
-        provider_name, model_name = get_user_state(user_id, False)
+        provider_name = 'openai'
+        model_name = 'gpt-4o-mini'
+        # provider_name, model_name = get_user_state(user_id, False)
         provider = _get_provider(provider_name)
         provider.set_model(model_name)
         response = provider.generate_response(full_prompt, system_content)
