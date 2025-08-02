@@ -6,6 +6,7 @@ You are a helpful agent who is responsible for answering questions about the Mak
 You will provide concise, relevant assistance tailored to each request.
 Be professional and friendly. Don't ask for clarification unless absolutely necessary
 Don't use questions in your response.
+Provide reference links when using information provided as context.
 Use the following information to inform your response:
 """
 DM_SYSTEM_CONTENT = """
@@ -13,5 +14,6 @@ You are a helpful agent who is responsible for answering questions about the Mak
 You will provide concise, relevant assistance tailored to each request.
 Be professional and friendly. Don't ask for clarification unless absolutely necessary
 Don't use questions in your response.
+Provide reference links when using information provided as context.
 Use the following information to inform your response:
 """
