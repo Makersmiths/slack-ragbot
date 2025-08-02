@@ -33,7 +33,7 @@ class OpenAI_API(BaseAPIProvider):
     def generate_response(self, prompt: str, system_content: str) -> str:
         try:
             embedding_uri = os.environ.get('OPENAI_EMBEDDING_URI')
-            source_info = cosmos_search(prompt, embedding_uri, self.api_key, self.container)
+            source_info = cosmos_search(prompt, embedding_uri, self.container)
             self.client = openai.AzureOpenAI(
                 azure_endpoint = os.environ.get('OPENAI_GPT_URI'),
                 api_key=self.api_key,

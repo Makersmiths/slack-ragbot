@@ -1,4 +1,4 @@
-from azure.identity import DefaultAzureCredential
+from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 from azure.keyvault.secrets import SecretClient
 from azure.mgmt.keyvault import KeyVaultManagementClient
 from azure.mgmt.cognitiveservices import CognitiveServicesManagementClient
@@ -131,7 +131,7 @@ def confluence_scraper(url, token, space_key):
     )
     return loader.load(space_key=space_key, limit=2)
 
-def cosmos_search(query, azure_ai_endpoint, azure_ai_api_key, vector_container):
+def cosmos_search(query, azure_ai_endpoint, vector_container):
     """
     Perform a vector search against a CosmosDB containern based on the user query.
 
@@ -143,7 +143,7 @@ def cosmos_search(query, azure_ai_endpoint, azure_ai_api_key, vector_container):
     list: A list of matching documents.
     """
     #Query OpenAI Embedding endpoint. Return a vector representation of users questions
-    query_embedding = get_openai_embedding(query, azure_ai_endpoint, azure_ai_api_key)
+    query_embedding = get_openai_embedding(query, azure_ai_endpoint)
     if query_embedding is None:
         return "Invalid query or embedding generation failed"
     
@@ -172,28 +172,27 @@ def DocumentsToDataframe(documents):
         data.append(row)
     return pd.DataFrame(data)
 
-def get_openai_embedding(text, endpoint, token_provider):
+def get_openai_embedding(text, endpoint):
     """
     Retrieve vector representation of text from an Azure OpenAI endpoint
-
     Args:
     text (string): Text that will be passed to embedding endpoint
     endpoint (string): URI for Azure OpenAI vector embedding endpoint
     api_key (string): API Key for Azure OpenAI embedding model usage 
     """
+    token_provider = get_bearer_token_provider(DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default")
+    api_version = "2024-02-01"
     #Establish an Azure OpenAI client
     client = openai.AzureOpenAI(
         azure_endpoint = endpoint,
         azure_ad_token_provider = token_provider,
-        api_version = '2024-02-01'
+        api_version = api_version
     )
-
     #Request and return vector representation of text.
     try:
-
         response = client.embeddings.create(
             input=text,
-            model="text-embedding-3-large",
+            model="text_embedding",
             dimensions=768
         )
         return response.data[0].embedding
