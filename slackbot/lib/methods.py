@@ -150,7 +150,7 @@ def cosmos_search(query, azure_ai_endpoint, vector_container):
     # Query CosmosDB for items with  returned embedding
     array = []
     for item in vector_container.query_items( 
-        query='SELECT TOP 10 c.title, c.content, VectorDistance(c.embedding,@embedding) AS SimilarityScore FROM c ORDER BY VectorDistance(c.embedding,@embedding)', 
+        query='SELECT TOP 20 c.title, c.content, VectorDistance(c.embedding,@embedding) AS SimilarityScore FROM c ORDER BY VectorDistance(c.embedding,@embedding)', 
          parameters=[ 
             {"name": "@embedding", "value": query_embedding} 
                 ], 

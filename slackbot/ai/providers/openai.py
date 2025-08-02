@@ -43,6 +43,7 @@ class OpenAI_API(BaseAPIProvider):
             for x in source_info:
                 system_content += "\n - Content Title: " + x['title'] + " - " + x['content'] + "\n"
 
+            print(f"System Content: {system_content}")
             response = self.client.chat.completions.create(
                 model='gpt-4o-mini',
                 messages=[{"role": "system", "content": system_content}, {"role": "user", "content": prompt}]
