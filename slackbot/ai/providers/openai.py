@@ -41,7 +41,7 @@ class OpenAI_API(BaseAPIProvider):
                 )
             
             for x in source_info:
-                system_content += "\n - Content Title: " + x['title'] + " - " + x['content'] + "\n"
+                system_content += "\n - Content Title: " + x['title'] + " - " + x['content'] + x['source'] + "\n"
 
             print(f"System Content: {system_content}")
             response = self.client.chat.completions.create(
