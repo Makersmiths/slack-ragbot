@@ -180,19 +180,23 @@ def get_openai_embedding(text, endpoint):
     endpoint (string): URI for Azure OpenAI vector embedding endpoint
     api_key (string): API Key for Azure OpenAI embedding model usage 
     """
+    model_name = "text-embedding-3-large"
+    deployment = "text_embedding"
+
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default")
     api_version = "2024-02-01"
+
     #Establish an Azure OpenAI client
     client = openai.AzureOpenAI(
-        azure_endpoint = endpoint,
-        azure_ad_token_provider = token_provider,
-        api_version = api_version
+        api_version=api_version,
+        azure_endpoint=endpoint,
+        azure_ad_token_provider=token_provider,
     )
     #Request and return vector representation of text.
     try:
         response = client.embeddings.create(
             input=text,
-            model="text_embedding",
+            model=deployment,
             dimensions=768
         )
         return response.data[0].embedding
