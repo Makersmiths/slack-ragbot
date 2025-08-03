@@ -4,7 +4,7 @@ import logging
 import os
 from lib.methods import *
 from azure.cosmos import CosmosClient
-
+import datetime
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
@@ -39,10 +39,13 @@ class OpenAI_API(BaseAPIProvider):
                 api_key=self.api_key,
                 api_version = '2023-05-15'
                 )
-            
-            for x in source_info:
-                system_content += "\n - Content Title: " + x['title'] + " - " + "Content: " + x['content'] + " - " + "Source URL: " + x['source'] + "\n"
+            #Appending current date to user prompt for temporal context
+            prompt += "Todays date is " + str(datetime.datetime.now().date()) + ".\n"
 
+            # Appending RAG content to user prompt
+            for x in source_info:
+                # system_content += "\n - Content Title: " + x['title'] + " - " + "Content: " + x['content'] + " - " + "Source URL: " + x['source'] + "\n"
+                prompt += "\n - Content Title: " + x['title'] + " - " + "Content: " + x['content'] + " - " + "Source URL: " + x['source'] + "\n"
             print(f"System Content: {system_content}")
             response = self.client.chat.completions.create(
                 model='gpt-4o-mini',
