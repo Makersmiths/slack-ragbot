@@ -57,25 +57,6 @@ resource "azurerm_linux_virtual_machine" "rag_compute" {
   }
 }
 
-resource "azurerm_role_assignment" "compute-ai-embeddings-assignment" {
-  scope = data.azurerm_subscription.primary.id
-  name = "00102000-0000-0000-0000-000007650000"
-  role_definition_id = azurerm_role_definition.compute-ai-embeddings-definition.role_definition_resource_id
-  principal_id = azurerm_linux_virtual_machine.rag_compute.identity[0].principal_id
-}
-
-resource "azurerm_role_definition" "compute-ai-embeddings-definition" {
-  role_definition_id = "00102000-0000-0000-0000-000007650000"
-  name = "compute-embedding-role"
-  scope = data.azurerm_subscription.primary.id
-  permissions {
-    data_actions = ["Microsoft.CognitiveServices/accounts/OpenAI/deployments/embeddings/action"]
-  }
-  assignable_scopes = [
-    data.azurerm_subscription.primary.id
-  ]
-}
-
 resource "azurerm_role_assignment" "compute-ai-dev-role" {
   scope                = data.azurerm_subscription.primary.id
   role_definition_name = "Cognitive Services Contributor"
@@ -88,39 +69,8 @@ resource "azurerm_role_assignment" "compute-reader-role" {
   principal_id         = azurerm_linux_virtual_machine.rag_compute.identity[0].principal_id
 }
 
-resource "azurerm_role_assignment" "compute-cosmos-reader-role" {
-  scope                = data.azurerm_subscription.primary.id
-  role_definition_name = "Cosmos DB Account Reader Role"
-  principal_id         = azurerm_linux_virtual_machine.rag_compute.identity[0].principal_id
-}
-
 resource "azurerm_role_assignment" "compute-keyvault-secret-user" {
   scope                = data.azurerm_subscription.primary.id
   role_definition_name = "Key Vault Secrets Officer"
   principal_id         = azurerm_linux_virtual_machine.rag_compute.identity[0].principal_id
-}
-
-resource "azurerm_cosmosdb_sql_role_assignment" "cosmosdb_role_assignment" {
-  account_name      = azurerm_cosmosdb_account.db_account.name
-  resource_group_name = azurerm_resource_group.rag_rg.name
-  scope             = azurerm_cosmosdb_account.db_account.id
-  principal_id      = azurerm_linux_virtual_machine.rag_compute.identity[0].principal_id
-  role_definition_id = azurerm_cosmosdb_sql_role_definition.cosmos-metadata-role-def.id
-  depends_on = [ azurerm_cosmosdb_sql_role_definition.cosmos-metadata-role-def]
-}
-
-resource "azurerm_cosmosdb_sql_role_definition" "cosmos-metadata-role-def" {
-  role_definition_id = "00000000-1928-0000-0000-000000000002"
-  resource_group_name = azurerm_resource_group.rag_rg.name
-  account_name        = azurerm_cosmosdb_account.db_account.name
-  name                = "cosmos-metadata-read-roleacctestsqlrole"
-  assignable_scopes = [
-    azurerm_cosmosdb_account.db_account.id
-  ]
-
-  permissions {
-    data_actions = ["Microsoft.DocumentDB/databaseAccounts/readMetadata", 
-    "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/delete",
-    "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/upsert"]
-  }
 }
